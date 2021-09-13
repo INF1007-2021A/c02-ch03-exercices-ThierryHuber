@@ -1,0 +1,35 @@
+image: gitpod/workspace-full
+tasks:
+  - init: |
+      source settings/variables.txt
+      python3 -m pip install -q git+"$classroom_tools_url"
+    command: python3 -m classroom_tools.auto_git --filename=exercice.py
+    openMode: tab-after
+    name: Auto git
+  - command: |
+      printf "Avant de commencer,\n"
+      printf "\t1) Aller sur le Preview à droite ou sur le lien suivant: https://gitpod.io/access-control/\n"
+      printf "\t2) Donner à Gitpod la permission: write public repos (GitHub)\n"
+      printf "\t3) Liser bien le README.md (Click droit sur README.md->Open With->Preview)\n"
+      gp preview  "https://gitpod.io/access-control/"
+    openMode: tab-before
+    name: Bonjour
+
+github:
+  prebuilds:
+    # enable for the master/default branch (defaults to true)
+    master: true
+    # enable for all branches in this repo (defaults to false)
+    branches: true
+    # enable for pull requests coming from this repo (defaults to true)
+    pullRequests: true
+    # enable for pull requests coming from forks (defaults to false)
+    pullRequestsFromForks: true
+    # add a check to pull requests (defaults to true)
+    addCheck: true
+    # add a "Review in Gitpod" button as a comment to pull requests (defaults to false)
+    addComment: true
+    # add a "Review in Gitpod" button to the pull request's description (defaults to false)
+    addBadge: false
+    # add a label once the prebuild is ready to pull requests (defaults to false)
+    addLabel: false

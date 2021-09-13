@@ -1,0 +1,28 @@
+name: Update derived template repos
+
+on:
+  workflow_dispatch:
+    inputs:
+      repo_filter:
+        description: "Prefix to filter repositories"
+        required: true
+      files_to_update:
+        description: "File paths to overwrite in template repos (space separated)"
+        required: true
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Update derived template repos
+        run: |
+          python3 -m pip install -q setuptools
+          python3 -m pip install -q git+"${{ secrets.CLASSROOM_TOOLS_URL }}"
+
+          python3 -m classroom_tools.student_repositories.sync_with_template_repository \
+            --template_repo_fullname="$GITHUB_REPOSITORY" \
+            --token="${{ secrets.REPO_WORKFLOW_PAT }}" \
+            --org_name="$(basename $(dirname $GITHUB_REPOSITORY))" \
+            --repo_filter=${{ github.event.inputs.repo_filter }} \
+            --files_to_update ${{ github.event.inputs.files_to_update }}

@@ -1,0 +1,18 @@
+{
+  "test_capitalize_first_letter": {
+    "name": "Première lettre en majuscule",
+    "points": 1
+  },
+  "test_lower_case_names": {
+    "name": "Formater des noms minuscules",
+    "points": 1
+  },
+  "test_upper_case_names": {
+    "name": "Formater des noms majuscules",
+    "points": 1
+  },
+  "test_linking_words": {
+    "name": "Mots de liaison en lettres minuscules",
+    "points": 1
+  }
+}

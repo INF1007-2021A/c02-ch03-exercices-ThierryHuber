@@ -1,0 +1,115 @@
+name: Verifications
+
+on:
+  workflow_dispatch:
+
+jobs:
+  Secrets:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Verify secrets
+        run: |
+          source settings/variables.txt
+
+          python3 -m pip install -q setuptools
+          python3 -m pip install -q git+"$classroom_tools_url"
+
+          python3 -m classroom_tools.verifications.access_to_github_secrets \
+            --token=${{ secrets.REPO_ADMIN_PAT }} \
+            --repo_fullname="$GITHUB_REPOSITORY"
+  Files_to_update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Verify files to update
+        run: |
+          source settings/variables.txt
+
+          python3 -m pip install -q setuptools
+          python3 -m pip install -q git+"$classroom_tools_url"
+
+          python3 -m classroom_tools.verifications.files_to_update \
+            --token=${{ secrets.REPO_WORKFLOW_PAT }} \
+            --template_repo_fullname="$GITHUB_REPOSITORY"
+  Testing_files:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Verify test file and test_associations.json
+        run: |
+          source settings/variables.txt
+
+          python3 -m pip install -q setuptools
+          python3 -m pip install -q git+"$classroom_tools_url"
+
+          python3 -m classroom_tools.verifications.grading_tests \
+            --test_file_path="$test_file" \
+            --test_associations_path="$test_associations_path"
+  is_template:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Verify that repo is a template
+        run: |
+          source settings/variables.txt
+
+          python3 -m pip install -q setuptools
+          python3 -m pip install -q git+"$classroom_tools_url"
+
+          python3 -m classroom_tools.verifications.repo_is_template \
+            --token=${{ secrets.REPO_WORKFLOW_PAT }} \
+            --repo_fullname="$GITHUB_REPOSITORY"
+  Variables:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Verify that settings/variables.txt exists
+        run: |
+          if [[ ! -f "settings/variables.txt" ]]
+          then
+            printf "File not found: settings/variables.txt\n"
+            exit 1
+          fi
+      - uses: actions/checkout@v2
+      - name: Verify test_file from settings/variables.txt
+        run: |
+          source settings/variables.txt
+          if [[ ! -f "$test_file" ]]
+          then
+            printf "File not found: $test_file\n"
+            exit 1
+          fi
+      - uses: actions/checkout@v2
+      - name: Verify test_associations_path from settings/variables.txt
+        run: |
+          source settings/variables.txt
+          if [[ ! -f "$test_associations_path" ]]
+          then
+            printf "File not found: $test_associations_path\n"
+            exit 1
+          fi
+      - uses: actions/checkout@v2
+      - name: Verify template_repo_fullname from settings/variables.txt
+        run: |
+          source settings/variables.txt
+
+          if [[ "$GITHUB_REPOSITORY" != "$template_repo_fullname" ]]
+          then
+            printf "Variable template_repo_fullname from settings/variables.txt:\n"
+            printf "\t$template_repo_fullname\n"
+            printf "doesn't match this repository's fullname:\n"
+            printf "\t$GITHUB_REPOSITORY\n"
+            exit 1
+          fi
+      - uses: actions/checkout@v2
+      - name: Verify classroom_tools_url from settings/variables.txt
+        run: |
+          source settings/variables.txt
+          python3 -m pip install -q setuptools
+          python3 -m pip install -q git+"$classroom_tools_url"

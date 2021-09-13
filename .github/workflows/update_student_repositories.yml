@@ -1,0 +1,28 @@
+name: Update students repos
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Update students repos
+        run: |
+          source settings/variables.txt
+
+          python3 -m pip install -q setuptools
+          python3 -m pip install -q git+"$classroom_tools_url"
+
+          python3 -m classroom_tools.student_repositories.delete_workflows \
+            --token=${{ secrets.REPO_WORKFLOW_PAT }} \
+            --org_name="$org_name" \
+            --repo_filter="$repo_filter"
+
+          python3 -m classroom_tools.student_repositories.sync_with_template_repository \
+            --template_repo_fullname="$GITHUB_REPOSITORY" \
+            --token="${{ secrets.REPO_WORKFLOW_PAT }}" \
+            --org_name="$org_name" \
+            --repo_filter="$repo_filter"
